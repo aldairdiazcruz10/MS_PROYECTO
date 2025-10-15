@@ -1,7 +1,6 @@
 from flask import Flask, render_template
 from flask_mail import Mail 
 import os
-import mysql.connector
 from controlador_docente import docente_bp
 from controlador_inicial import inicio_bp
 from control_mensajes import mensajes_bp
@@ -9,16 +8,15 @@ from cumpleanios_docentes_controller import cumple_docente_bp
 from mail_config import mail 
 
 def create_app():
-    app= Flask(__name__)
+    app = Flask(__name__)
     
-    # Configuración de Mail
+    # Configuración de Mail usando variables de entorno
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
     app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] = 'eduardo.diaz@mastersystem.edu.pe'
-    app.config['MAIL_PASSWORD'] = 'bsrf haof atug voar'  # contraseña de aplicación de Google
-    app.config['MAIL_DEFAULT_SENDER'] = 'eduardo.diaz@mastersystem.edu.pe'
-
+    app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+    app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+    app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME')
 
     # Inicializar Mail
     mail.init_app(app)
@@ -31,6 +29,4 @@ def create_app():
     return app
 
 app = create_app()
-
-if __name__ == "__main__":
-    app.run(debug=True)                                                                                                                                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                                                                                                                               
