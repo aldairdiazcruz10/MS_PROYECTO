@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>🎂 Cumpleaños de Docentes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .scroll-table {
+            max-height: 480px;
+            overflow-y: auto;
+            border-radius: 10px;
+        }
+        .table th {
+            background-color: #004AAD;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .progress {
+            height: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <div class="container">
+
+        <!-- Botón Volver al inicio -->
+        <div class="mb-3">
+            <a href="{{ url_for('inicio.index') }}" class="btn btn-secondary">
+                ⬅️ Volver al inicio
+            </a>
+        </div>
+        <h2 class="text-center mb-4">🎉 Lista de Cumpleaños de Docentes</h2>
+
+        <div class="scroll-table">
+            <table class="table table-hover table-bordered align-middle">
+                <thead>
+                    <tr>
+                        <th>Docente</th>
+                        <th>Correo</th>
+                        <th>Fecha de Nacimiento</th>
+                        <th>Días Faltantes</th>
+                        <th>Progreso</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in docentes %}
+                    <tr>
+                        <td>{{ d.nombre }}</td>
+                        <td>{{ d.correo }}</td>
+                        <td>{{ d.fecha_nacimiento }}</td>
+                        <td>{{ d.dias_faltantes }} días</td>
+                        <td style="width: 200px;">
+                            <div class="progress">
+                                <div class="progress-bar bg-{{ d.color }}" 
+                                    role="progressbar" 
+                                    style="width: {{ 100 - (d.dias_faltantes * 2 if d.dias_faltantes < 50 else 10) }}%"
+                                    aria-valuenow="{{ d.dias_faltantes }}" 
+                                    aria-valuemin="0" aria-valuemax="365">
+                                    {{ d.dias_faltantes }} días
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="enviarCorreo('{{ d.id }}', '{{ d.nombre }}')">
+                                ✉️ Enviar saludo
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ✅ Librerías -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- ✅ Script para enviar el correo -->
+    <script>
+    function enviarCorreo(id, nombre) {
+        Swal.fire({
+            title: '🎁 Enviar saludo de cumpleaños',
+            html: `
+                <p>Escribe un mensaje para <strong>${nombre}</strong>:</p>
+                <textarea id="mensaje" class="form-control" rows="3" placeholder="Escribe tu mensaje aquí..."></textarea>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Enviar 🎉',
+            cancelButtonText: 'Cancelar',
+            focusConfirm: false,
+            preConfirm: () => {
+                const mensaje = document.getElementById('mensaje').value.trim();
+                if (!mensaje) {
+                    Swal.showValidationMessage('Por favor escribe un mensaje.');
+                }
+                return mensaje;
+            }
+        }).then(result => {
+            if (result.isConfirmed) {
+                fetch("/cumpleaños/enviar", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: new URLSearchParams({ docente_id: id, mensaje: result.value })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Correo enviado 🎉",
+                            text: data.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        Swal.fire("Error", data.error, "error");
+                    }
+                })
+                .catch(err => {
+                    Swal.fire("Error", "No se pudo enviar el correo.", "error");
+                    console.error(err);
+                });
+            }
+        });
+    }
+    </script>
+
+</body>
+</html>

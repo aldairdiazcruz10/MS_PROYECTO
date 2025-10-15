@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión - Página Principal</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+</head>
+<body>
+    <div class="container loading">
+        <div class="logo">Master System</div>
+        <h1>Sistema de Gestión</h1>
+        <p class="subtitle">Panel de administración y control</p>
+
+        <div class="menu-grid">
+            <a href="{{ url_for('docente.listar_docentes') }}" class="menu-item">
+                <span class="menu-icon">👨‍🏫</span>
+                <div class="menu-title">Gestión de Docentes</div>
+                <div class="menu-description">Administrar profesores y envio de mensajes </div>
+            </a>
+
+            <!-- Puedes agregar más opciones de menú aquí -->
+            <a href="#" class="menu-item">
+                <span class="menu-icon">👨‍🎓</span>
+                <div class="menu-title">Gestión de Estudiantes</div>
+                <div class="menu-description">Administrar alumnos y matrículas</div>
+            </a>
+
+            <a href="{{ url_for('cumple_docente.listar_cumpleaños') }}" class="menu-item">
+                <span class="menu-icon">📚</span>
+                <div class="menu-title">Cumpleaños de docentes </div>
+                <div class="menu-description">PLANA DOCENTE</div>
+            </a>
+
+            <a href="{{ url_for('mensajes_bp.listar_docentes') }}" class="menu-item">
+                <span class="menu-icon">📊</span>
+                <div class="menu-title">Reportes</div>
+                <div class="menu-description">mensajes maximos a los docentes via whatsapp</div>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Sistema de Gestión Educativa</p>
+        </div>
+    </div>
+
+    <script>
+        // Animación de entrada
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.container');
+            setTimeout(() => {
+                container.classList.add('loading');
+            }, 100);
+        });
+
+        // Efecto de hover mejorado
+        const menuItems = document.querySelectorAll('.menu-item');
+        menuItems.forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+        
+</body>
+</html>
