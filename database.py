@@ -1,4 +1,4 @@
-import psycopg2
+import psycopg
 import os
 from psycopg2 import extras
 
