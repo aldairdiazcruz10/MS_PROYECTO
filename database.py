@@ -1,6 +1,5 @@
-import psycopg
 import os
-from psycopg2 import extras
+import psycopg
 
 class Database:
     _instance = None
@@ -13,8 +12,8 @@ class Database:
     
     def connect_to_db(self):
         try:
-            database_url = os.getenv("DATABASE_URL")  # Render lee esta variable
-            self.connection = psycopg2.connect(database_url)
+            database_url = os.getenv("DB_URL")  # Render lee esta variable
+            self.connection = psycopg.connect(database_url, autocommit=True)
             print("✅ Conexión exitosa a PostgreSQL (Neon)")
         except Exception as err:
             print(f"❌ Error al conectar con la base de datos: {err}")
@@ -29,7 +28,8 @@ class Database:
     def get_cursor(self):
         connection = self.get_connection()
         if connection:
-            return connection.cursor(cursor_factory=extras.RealDictCursor)
+            # En psycopg3 se usa .cursor() directamente, para obtener dicts:
+            return connection.cursor(row_factory=psycopg.rows.dict_row)
         else:
             print("⚠️ Error: no se puede obtener un cursor, la conexión está cerrada")
             return None
