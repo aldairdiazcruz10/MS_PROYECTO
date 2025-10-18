@@ -1,37 +1,35 @@
-import mysql.connector
+import psycopg2
+import os
+from psycopg2 import extras
 
 class Database:
-    _instance = None 
+    _instance = None
     
     def __new__(cls):
-        if cls._instance is None: 
+        if cls._instance is None:
             cls._instance = super(Database, cls).__new__(cls)
             cls._instance.connect_to_db()
         return cls._instance
     
     def connect_to_db(self):
         try:
-            self.connection = mysql.connector.connect(
-                host='localhost',
-                user='root',
-                password='',
-                database='ms_proyecto'
-            )
-        except mysql.connector.Error as err:
-            print(f"Error al  conectar con la base de datos: {err}")
-            self.connection  = None     
+            database_url = os.getenv("DATABASE_URL")  # Render lee esta variable
+            self.connection = psycopg2.connect(database_url)
+            print("✅ Conexión exitosa a PostgreSQL (Neon)")
+        except Exception as err:
+            print(f"❌ Error al conectar con la base de datos: {err}")
+            self.connection = None
     
     def get_connection(self):
-        if self.connection is None or not self.connection.is_connected():
-            print("reconectando a la base de datos ")
+        if self.connection is None or self.connection.closed != 0:
+            print("♻️ Reconectando a la base de datos...")
             self.connect_to_db()
         return self.connection
     
     def get_cursor(self):
-        """Retorna un uevo cursor si la conexion esta activida"""
         connection = self.get_connection()
-        if connection: 
-            return connection.cursor(dictionary=True)
+        if connection:
+            return connection.cursor(cursor_factory=extras.RealDictCursor)
         else:
-            print("Error: no se puede obtener un cursor la conexcion esta cerrada")
-            return None 
+            print("⚠️ Error: no se puede obtener un cursor, la conexión está cerrada")
+            return None
