@@ -11,12 +11,12 @@ def create_app():
     app = Flask(__name__)
     
     # Configuración de Mail usando variables de entorno
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_SERVER'] = 'smtp-relay.brevo.com'
     app.config['MAIL_PORT'] = 587
     app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-    app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-    app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME')
+    app.config['MAIL_USERNAME'] = os.environ.get('mailto:99b357001@smtp-brevo.com')
+    app.config['MAIL_PASSWORD'] = os.environ.get('cpTLABJKPS8z6D14')
+    app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('eduardo.diaz@mastersystem.edu.pe')
 
     # Inicializar Mail
     mail.init_app(app)
